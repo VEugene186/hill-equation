@@ -6,7 +6,7 @@ public:
     Equation(int dim, int numberOfParameters);
     virtual ~Equation();
 
-    virtual void RHS(double t, const double * q, double * dq) = 0;
+    virtual void RHS(double t, const double * q, double * dq) const = 0;
 
     int getDim() const;
     int getNumberOfParameters() const;
