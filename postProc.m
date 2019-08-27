@@ -19,8 +19,10 @@ fprintf(1, "D in [%.15e, %.15e]\n", min(min(D)), max(max(D)));
 
 %contour(oo, ee, TR, [2 2]);
 
-contour(oo, ee, TR, [2 2]);
-
+%contour(oo, ee, TR, [2 2]);
+surfc(oo, ee, TR, 'edgecolor', 'none');
+zlim([0 10]);
+return
 eps = 1;
 omega = 0.31;
 eqs = @(t, q)[q(2) ; -omega^2 * (1 + eps * cos(t)) * q(1)];

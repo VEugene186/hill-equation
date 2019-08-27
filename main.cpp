@@ -2,6 +2,7 @@
 #include <cmath>
 #include <valarray>
 #include "Mathieu.h"
+#include "Mathieu2.h"
 #include "RungeKutta.h"
 #include <omp.h>
 
@@ -11,13 +12,13 @@ void saveToFile(const char * fName, valarray<double> & x, valarray<double> & y,
         valarray<valarray<double> > & T);
 
 int main(int argc, char * argv[]) {
-    double omega_min = 0.1;
-    double omega_max = 2.0;
+    double omega_min = -0.5;
+    double omega_max = 2.5;
     double e_min = 0.0;
-    double e_max = 2.0;
+    double e_max = 1.0;
 
-    int N_omega = 501;
-    int N_e = 501;
+    int N_omega = 1001;
+    int N_e = 1001;
     
     double dOmega = (omega_max - omega_min) / (N_omega - 1);
     double de = (e_max - e_min) / (N_e - 1);
@@ -53,7 +54,7 @@ int main(int argc, char * argv[]) {
     #pragma omp parallel
     {
         RungeKutta method;
-        Mathieu eqs;
+        Mathieu2 eqs;
         method.init(&eqs);
 
         double img1[2], img2[2];
