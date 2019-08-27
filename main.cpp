@@ -3,6 +3,7 @@
 #include <valarray>
 #include "Mathieu.h"
 #include "RungeKutta.h"
+#include <omp.h>
 
 using namespace std;
 
@@ -10,17 +11,13 @@ void saveToFile(const char * fName, valarray<double> & x, valarray<double> & y,
         valarray<valarray<double> > & T);
 
 int main(int argc, char * argv[]) {
-    RungeKutta method;
-    Mathieu eqs;
-    method.init(&eqs);
-    
     double omega_min = 0.1;
     double omega_max = 2.0;
     double e_min = 0.0;
-    double e_max = 1.0;
+    double e_max = 2.0;
 
-    int N_omega = 101;
-    int N_e = 101;
+    int N_omega = 501;
+    int N_e = 501;
     
     double dOmega = (omega_max - omega_min) / (N_omega - 1);
     double de = (e_max - e_min) / (N_e - 1);
@@ -47,32 +44,54 @@ int main(int argc, char * argv[]) {
     double delta = 1e-4;
     double ic1_p[2] = { delta, 0.0 }, ic1_m[2] = {- delta, 0.0 };
     double ic2_p[2] = { 0.0, delta }, ic2_m[2] = { 0.0, -delta };
-    double img1_p[2], img1_m[2], img2_p[2], img2_m[2];
-    double A[2][2];
-
+   
+    printf("Number of threads: ");
+    int nThreads = 1;
+    scanf("%d", &nThreads);
+    omp_set_num_threads(nThreads);
     int count = 0;
-    for (int i = 0; i < N_omega; i++) {
-        for (int j = 0; j < N_e; j++) {
-            eqs.setParameter(0, omega[i]);
-            eqs.setParameter(1, e[j]);
+    
+    double start = omp_get_wtime();
+    #pragma omp parallel
+    {
+        RungeKutta method;
+        Mathieu eqs;
+        method.init(&eqs);
 
-            method.map(&eqs, 0.0, ic1_p, img1_p, N_t, T);
-            method.map(&eqs, 0.0, ic1_m, img1_m, N_t, T);
-            method.map(&eqs, 0.0, ic2_p, img2_p, N_t, T);
-            method.map(&eqs, 0.0, ic2_m, img2_m, N_t, T);
+        double img1_p[2], img1_m[2], img2_p[2], img2_m[2];
+        double A[2][2];
+        #pragma omp for
+        for (int i = 0; i < N_omega; i++) {
+            for (int j = 0; j < N_e; j++) {
+                eqs.setParameter(0, omega[i]);
+                eqs.setParameter(1, e[j]);
+
+                method.map(&eqs, 0.0, ic1_p, img1_p, N_t, T);
+                method.map(&eqs, 0.0, ic1_m, img1_m, N_t, T);
+                method.map(&eqs, 0.0, ic2_p, img2_p, N_t, T);
+                method.map(&eqs, 0.0, ic2_m, img2_m, N_t, T);
             
-            A[0][0] = (img1_p[0] - img1_m[0]) / (2.0 * delta);
-            A[1][0] = (img1_p[1] - img1_m[1]) / (2.0 * delta);
-            A[0][1] = (img2_p[0] - img2_m[0]) / (2.0 * delta);
-            A[1][1] = (img2_p[1] - img2_m[1]) / (2.0 * delta);
+                A[0][0] = (img1_p[0] - img1_m[0]) / (2.0 * delta);
+                A[1][0] = (img1_p[1] - img1_m[1]) / (2.0 * delta);
+                A[0][1] = (img2_p[0] - img2_m[0]) / (2.0 * delta);
+                A[1][1] = (img2_p[1] - img2_m[1]) / (2.0 * delta);
+                /*A[0][0] = img1_p[0];
+                A[1][0] = img1_p[1];
+                A[0][1] = img2_p[0];
+                A[1][1] = img2_p[1];*/
 
-            det[i][j] = A[0][0] * A[1][1] - A[1][0] * A[0][1];
-            tr[i][j] = fabs(A[0][0] + A[1][1]);
-            count++;
-            printf("Ready %6d from %6d\n", count, N_omega * N_e);
+                det[i][j] = A[0][0] * A[1][1] - A[1][0] * A[0][1];
+                tr[i][j] = fabs(A[0][0] + A[1][1]);
+            }
+            
+            #pragma omp critical
+            {
+                count += N_e;
+                printf("Ready %6d from %6d\n", count, N_omega * N_e);
+            }
         }
     }
-    
+    printf("Time: %lg\n", omp_get_wtime() - start);
     saveToFile("trace.csv", omega, e, tr);
     saveToFile("det.csv", omega, e, det);
 

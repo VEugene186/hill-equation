@@ -1,5 +1,5 @@
 all: method
-	g++ Equation.o Mathieu.o RungeKutta.o main.cpp -o main
+	g++ --openmp Equation.o Mathieu.o RungeKutta.o main.cpp -o main
 
 eqs:
 	g++ Equation.cpp -c -o Equation.o
