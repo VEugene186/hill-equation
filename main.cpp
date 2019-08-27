@@ -41,9 +41,7 @@ int main(int argc, char * argv[]) {
     double T = 2.0 * M_PI;
     int N_t = 6000;
     printf("Integration Step: %lg\n", T / N_t);
-    double delta = 1e-4;
-    double ic1_p[2] = { delta, 0.0 }, ic1_m[2] = {- delta, 0.0 };
-    double ic2_p[2] = { 0.0, delta }, ic2_m[2] = { 0.0, -delta };
+    double ic1[2] = { 1.0, 0.0 }, ic2[2] = { 0.0, 1.0 };
    
     printf("Number of threads: ");
     int nThreads = 1;
@@ -58,7 +56,7 @@ int main(int argc, char * argv[]) {
         Mathieu eqs;
         method.init(&eqs);
 
-        double img1_p[2], img1_m[2], img2_p[2], img2_m[2];
+        double img1[2], img2[2];
         double A[2][2];
         #pragma omp for
         for (int i = 0; i < N_omega; i++) {
@@ -66,19 +64,11 @@ int main(int argc, char * argv[]) {
                 eqs.setParameter(0, omega[i]);
                 eqs.setParameter(1, e[j]);
 
-                method.map(&eqs, 0.0, ic1_p, img1_p, N_t, T);
-                method.map(&eqs, 0.0, ic1_m, img1_m, N_t, T);
-                method.map(&eqs, 0.0, ic2_p, img2_p, N_t, T);
-                method.map(&eqs, 0.0, ic2_m, img2_m, N_t, T);
+                method.map(&eqs, 0.0, ic1, img1, N_t, T);
+                method.map(&eqs, 0.0, ic2, img2, N_t, T);
             
-                A[0][0] = (img1_p[0] - img1_m[0]) / (2.0 * delta);
-                A[1][0] = (img1_p[1] - img1_m[1]) / (2.0 * delta);
-                A[0][1] = (img2_p[0] - img2_m[0]) / (2.0 * delta);
-                A[1][1] = (img2_p[1] - img2_m[1]) / (2.0 * delta);
-                /*A[0][0] = img1_p[0];
-                A[1][0] = img1_p[1];
-                A[0][1] = img2_p[0];
-                A[1][1] = img2_p[1];*/
+                A[0][0] = img1[0]; A[0][1] = img2[0]; 
+                A[1][0] = img1[1]; A[1][1] = img2[1];
 
                 det[i][j] = A[0][0] * A[1][1] - A[1][0] * A[0][1];
                 tr[i][j] = fabs(A[0][0] + A[1][1]);
