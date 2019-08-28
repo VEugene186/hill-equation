@@ -8,7 +8,7 @@ public:
     Mathieu();
     ~Mathieu();
 
-   virtual void RHS(double t, const double * q, double * dq) const;
+   virtual void RHS(double t, const double *q, double *dq) const;
 };
 
 #endif
