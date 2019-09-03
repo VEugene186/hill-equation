@@ -2,6 +2,18 @@ clc;
 clear all;
 close all;
 
+[omega, J, tr] = readFile('trace.csv');
+f1 = figure(1);
+h = semilogx(1, 1);
+hold on;
+contour(omega, J, tr, [2 2], 'linecolor', 'k');
+xlabel('Omega');
+ylabel('J');
+grid on
+delete(h);
+
+return
+
 D = dlmread('det.csv', '\t');
 TR = dlmread('trace.csv', '\t');
 

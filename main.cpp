@@ -58,14 +58,14 @@ void saveToFile(const char * fName, valarray<double> & x, valarray<double> & y,
     int N_x = (int)x.size();
     int N_y = (int)y.size();
 
-    for (int j = 0; j < N_x; j++) {
-        fprintf(f, "\t%.15lg", x[j]);
+    for (int i = 0; i < N_x; i++) {
+        fprintf(f, "\t%.15lg", x[i]);
     }
     fprintf(f, "\n");
 
-    for (int i = 0; i < N_y; i++) {
-        fprintf(f, "%.15lg", y[i]);
-        for (int j = 0; j < N_x; j++) {
+    for (int j = 0; j < N_y; j++) {
+        fprintf(f, "%.15lg", y[j]);
+        for (int i = 0; i < N_x; i++) {
             fprintf(f, "\t%.15lg", T[i][j]);
         }
         fprintf(f, "\n");
@@ -296,12 +296,12 @@ void case3() {
 void case4() {
     double OMEGA_N_CONST = 200.0 * M_PI;
 
-    double omega_min = 0.01;
-    double omega_max = 3.0;
+    double omega_min = 0.02;
+    double omega_max = 0.22;
     double dJ2_min = 0.0;
-    double dJ2_max = 2.0;
+    double dJ2_max = 0.5;
 
-    int N_omega = 1001;
+    int N_omega = 16001;
     int N_dJ2 = 1001;
     
     double ddJ2 = (dJ2_max - dJ2_min) / (N_dJ2 - 1);
@@ -311,7 +311,7 @@ void case4() {
     valarray<valarray<double> > tr(N_omega), det(N_omega);
     for (int i = 0; i < N_omega; i++) {
         tr[i].resize(N_dJ2, 0.0);
-        det[i].resize(N_omega, 0.0);
+        det[i].resize(N_dJ2, 0.0);
     }
 
     double p1 = log10(omega_min);
@@ -341,6 +341,7 @@ void case4() {
         eqs.setParameter(0, 2.0);
         eqs.setParameter(1, 3.0);
         eqs.setParameter(2, 4.0);
+        eqs.setParameter(5, 0.0);
 
         double img1[2], img2[2];
         double A[2][2];
