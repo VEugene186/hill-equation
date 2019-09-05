@@ -1,6 +1,8 @@
 #include <cstdio>
 #include <cmath>
 #include <valarray>
+#include <vector>
+#include <string>
 #include "Mathieu.h"
 #include "Mathieu2.h"
 #include "LiouvilleHill.h"
@@ -13,12 +15,21 @@ using namespace std;
 void saveToFile(const char * fName, valarray<double> & x, valarray<double> & y, 
         valarray<valarray<double> > & T);
 
+void startMenuLoop();
+
+void multitreadingOptions();
+void clearStream();
+
 void case1();
 void case2();
 void case3();
 void case4();
 
 int main(int argc, char * argv[]) {
+    startMenuLoop();
+    
+    return 0;
+
     printf("Number of threads: ");
     int nThreads = 1;
     scanf("%d", &nThreads);
@@ -51,6 +62,62 @@ int main(int argc, char * argv[]) {
     return 0;
 }
 
+void clearStream() {
+    while (getchar() != '\n') {}
+}
+
+void multitreadingOptions() {
+    int nThreads = omp_get_max_threads();
+    printf("Number of thread [%d]: ", nThreads);
+    scanf("%d", &nThreads);
+    omp_set_num_threads(nThreads);
+}
+
+void startMenuLoop() {
+    vector<string> items;
+    items.push_back("1 - x\'\' + omega^2 * (1 + a * cos(t)) * x = 0");
+    items.push_back("2 - x\'\' + (k + delta * cos(t)) * x = 0");
+    items.push_back("3 - Periodic perturbation of Euler-Poinsot case");
+    items.push_back("4 - Periodic perturbation of Joukowskii-Volterra case");
+    items.push_back("5 - Multi-threading options");
+    items.push_back("0 - Exit");
+
+    int selected = -1;
+    while (selected != 0) {
+        selected = -1;
+        system("clear");
+        for (int n = 0; n < (int)items.size(); n++) {
+            printf("%s\n", items[n].c_str());
+        }
+        printf("Select: ");
+        
+        int res = scanf("%d", &selected);
+        if (res != 1) {
+            clearStream();
+            continue;
+        }
+        clearStream();
+        switch (selected) {
+        case 1:
+
+            break;
+        case 2:
+
+            break;
+        case 3:
+
+            break;
+        case 4:
+
+            break;
+        case 5:
+            multitreadingOptions();
+            break;
+        }
+
+    }
+
+}
 
 void saveToFile(const char * fName, valarray<double> & x, valarray<double> & y, 
         valarray<valarray<double> > & T) {
