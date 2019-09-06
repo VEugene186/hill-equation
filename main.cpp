@@ -5,7 +5,6 @@
 #include <string>
 #include "Mathieu.h"
 #include "Mathieu2.h"
-#include "LiouvilleHill.h"
 #include "LiouvilleHill2.h"
 #include "RungeKutta.h"
 #include <omp.h>
