@@ -6,6 +6,7 @@
 #include "Mathieu.h"
 #include "Mathieu2.h"
 #include "LiouvilleHill2.h"
+#include "EulerPoisson.h"
 #include "RungeKutta.h"
 #include <omp.h>
 
@@ -22,6 +23,8 @@ void clearStream();
 void MathieuEquation_Arnold();
 void MathieuEquation_Kovacic();
 void EulerPoinsotStability();
+void JoukowskiiVolterraStability_Flow(); 
+void JoukowskiiVolterraStability_Map(); 
 
 int main(int argc, char * argv[]) {
     startMenuLoop();
@@ -75,7 +78,8 @@ void startMenuLoop() {
             EulerPoinsotStability();
             break;
         case 4:
-
+            //JoukowskiiVolterraStability_Flow();
+            JoukowskiiVolterraStability_Map();
             break;
         case 5:
             multitreadingOptions();
@@ -333,3 +337,99 @@ void EulerPoinsotStability() {
     saveToFile("trace.csv", Omega, dJ2, tr);
     saveToFile("det.csv", Omega, dJ2, det);
 }
+
+void JoukowskiiVolterraStability_Flow() {
+    double M0[3] = { 0.536357900134574, 0.589984383362725, 3.37108864269863 };//1 stable point
+    //double M0[3] = { 0.5363579, 0.589984383362725, 3.37108864269863 };//1 stable point perturbed
+    //double M0[3] = { 0.792282734739558, 2.94208261906373, -1.64816198565656 };//2 unstable point
+    //double M0[3] = { 0.79228273473, 2.94208261906373, -1.64816198565656 };//2 unstable point perturbed
+    EulerPoisson eqs;
+    eqs.setParameter(0, 2.0);
+    eqs.setParameter(1, 3.0);
+    eqs.setParameter(2, 4.0);
+    eqs.setParameter(3, 0.3);
+    eqs.setParameter(4, 0.2);
+    eqs.setParameter(5, 0.4);
+    eqs.setParameter(6, 2.0 * M_PI);
+    eqs.setParameter(7, 0.01);
+    RungeKutta method;
+    method.init(&eqs);
+
+    double T = 200.0;
+    int N = 20001;
+    double dt = T / (N - 1);
+    valarray<double> t(N);
+    valarray<double*> sol(N);
+    for (int i = 0; i < N; i++) {
+        sol[i] = new double[3];
+    }
+    t[0] = 0.0;
+    sol[0][0] = M0[0];
+    sol[0][1] = M0[1];
+    sol[0][2] = M0[2];
+
+    for (int i = 0; i < N - 1; i++) {
+        t[i + 1] = t[i] + dt;
+        method.makeStep(&eqs, t[i], sol[i], sol[i + 1], dt);
+    }
+
+    FILE * f = fopen("solution.csv", "w");
+    for (int i = 0; i < N; i++) {
+        fprintf(f, "%.15lg\t%.15lg\t%.15lg\t%.15lg\n", t[i], sol[i][0], sol[i][1], sol[i][2]);
+    }
+    fclose(f);        
+    for (int i = 0; i < N; i++) {
+        delete [] sol[i];
+    }
+}
+
+void JoukowskiiVolterraStability_Map() {
+    //double M0[3] = { 0.536357900134574, 0.589984383362725, 3.37108864269863 };//1 stable point
+    //double M0[3] = { 0.5363579, 0.589984383362725, 3.37108864269863 };//1 stable point perturbed
+    //double M0[3] = { 0.792282734739558, 2.94208261906373, -1.64816198565656 };//2 unstable point
+    double M0[3] = { 0.79228273473, 2.94208261906373, -1.64816198565656 };//2 unstable point perturbed
+    EulerPoisson eqs;
+    eqs.setParameter(0, 2.0);
+    eqs.setParameter(1, 3.0);
+    eqs.setParameter(2, 4.0);
+    eqs.setParameter(3, 0.3);
+    eqs.setParameter(4, 0.2);
+    eqs.setParameter(5, 0.4);
+    eqs.setParameter(6, 2.0 * M_PI);
+    eqs.setParameter(7, 0.0);
+    RungeKutta method;
+    method.init(&eqs);
+
+    double T = 1.0;
+    int N = 20001;
+    valarray<double> t(N);
+    valarray<double*> sol(N);
+    for (int i = 0; i < N; i++) {
+        sol[i] = new double[3];
+    }
+    t[0] = 0.0;
+    sol[0][0] = M0[0];
+    sol[0][1] = M0[1];
+    sol[0][2] = M0[2];
+
+    for (int i = 0; i < N - 1; i++) {
+        t[i + 1] = t[i] + T;
+        method.map(&eqs, t[i], sol[i], sol[i + 1], 100, T);
+    }
+
+    FILE * f = fopen("solution.csv", "w");
+    for (int i = 0; i < N; i++) {
+        fprintf(f, "%.15lg\t%.15lg\t%.15lg\t%.15lg\n", t[i], sol[i][0], sol[i][1], sol[i][2]);
+    }
+    fclose(f);        
+    for (int i = 0; i < N; i++) {
+        delete [] sol[i];
+    }
+}
+
+
+
+
+
+
+
