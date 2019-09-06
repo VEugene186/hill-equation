@@ -508,6 +508,12 @@ void  JoukowskiiVolterraStability_trackFP() {
 }
 
 void JoukowskiiVolterraStability_trackMap() {
+    //double M0[3] = { 0.536357900134574, 0.589984383362725, 3.37108864269863 };//1 stable point
+    //double M0[3] = { 0.5363579, 0.589984383362725, 3.37108864269863 };//1 stable point perturbed
+    //double M0[3] = { 0.792282734739558, 2.94208261906373, -1.64816198565656 };//2 unstable point
+    //double M0[3] = { 0.79228273473, 2.94208261906373, -1.64816198565656 };//2 unstable point perturbed
+    double M0[3] = { -3.43273007941469, -0.316911509971415, -0.340486966577532 };//4 stable point
+
     double Omega_min, Omega_max;
     double dJ2_min, dJ2_max;
     int N_Omega, N_dJ2;
@@ -521,6 +527,7 @@ void JoukowskiiVolterraStability_trackMap() {
     valarray<valarray<double*> > points(N_Omega);
 
 
+    int count = 0;
     double start = omp_get_wtime();
     #pragma omp parallel
     {
@@ -538,7 +545,7 @@ void JoukowskiiVolterraStability_trackMap() {
 
         #pragma omp for schedule(dynamic, 1)
         for (int i = 0; i < N_Omega; i++) {
-            eqs.setParameter(6, Omega[j]);
+            eqs.setParameter(6, Omega[i]);
             ept.track(&eqs, M0, dJ2_min, dJ2_max, N_dJ2, points[i], tmp_dJ2);
 
             
