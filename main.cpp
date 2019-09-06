@@ -29,6 +29,7 @@ void JoukowskiiVolterraStability_Flow();
 void JoukowskiiVolterraStability_Map(); 
 void JoukowskiiVolterraStability_findFP(); 
 void JoukowskiiVolterraStability_trackFP(); 
+void JoukowskiiVolterraStability_trackMap(); 
 
 int main(int argc, char * argv[]) {
     startMenuLoop();
@@ -85,7 +86,8 @@ void startMenuLoop() {
             //JoukowskiiVolterraStability_Flow();
             //JoukowskiiVolterraStability_Map();
             //JoukowskiiVolterraStability_findFP();
-            JoukowskiiVolterraStability_trackFP(); 
+            //JoukowskiiVolterraStability_trackFP();
+            JoukowskiiVolterraStability_trackMap(); 
             break;
         case 5:
             multitreadingOptions();
@@ -505,6 +507,50 @@ void  JoukowskiiVolterraStability_trackFP() {
 
 }
 
+void JoukowskiiVolterraStability_trackMap() {
+    double Omega_min, Omega_max;
+    double dJ2_min, dJ2_max;
+    int N_Omega, N_dJ2;
+
+    inputMesh("Omega", "dJ2", &N_Omega, &Omega_min, &Omega_max, &N_dJ2, &dJ2_min, &dJ2_max);
+
+    valarray<double> Omega, dJ2;
+    createMesh(N_Omega, Omega_min, Omega_max, Omega, true);
+    createMesh(N_dJ2, dJ2_min, dJ2_max, dJ2);
+
+    valarray<valarray<double*> > points(N_Omega);
 
 
+    double start = omp_get_wtime();
+    #pragma omp parallel
+    {
+        EulerPoissonTracker ept;
+        EulerPoisson eqs;
+        eqs.setParameter(0, 2.0);
+        eqs.setParameter(1, 3.0);
+        eqs.setParameter(2, 4.0);
+        eqs.setParameter(3, 0.3);
+        eqs.setParameter(4, 0.2);
+        eqs.setParameter(5, 0.4);
+        //eqs.setParameter(6, 0.5);
+        //eqs.setParameter(7, 0.0);
+        valarray<double> tmp_dJ2;
 
+        #pragma omp for schedule(dynamic, 1)
+        for (int i = 0; i < N_Omega; i++) {
+            eqs.setParameter(6, Omega[j]);
+            ept.track(&eqs, M0, dJ2_min, dJ2_max, N_dJ2, points[i], tmp_dJ2);
+
+            
+            #pragma omp critical
+            {
+                count += N_dJ2;
+                printf("Ready %6d from %6d\n", count, N_Omega * N_dJ2);
+            }
+        }
+    }
+    printf("Time: %lg\n", omp_get_wtime() - start);
+    
+
+
+}
