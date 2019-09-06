@@ -1,5 +1,5 @@
 all: tools
-	g++ --std=c++11 --openmp Equation.o Mathieu.o Mathieu2.o LiouvilleHill2.o EulerPoisson.o RungeKutta.o EulerPoissonFixedPoints.o main.cpp -o main
+	g++ --std=c++11 --openmp Equation.o Mathieu.o Mathieu2.o LiouvilleHill2.o EulerPoisson.o RungeKutta.o EulerPoissonFixedPoints.o EulerPoissonTracker.o main.cpp -o main
 
 eqs:
 	g++ --std=c++11 Equation.cpp -c -o Equation.o
@@ -13,5 +13,6 @@ method: eqs
 
 tools: method
 	g++ --std=c++11 EulerPoissonFixedPoints.cpp -c -o EulerPoissonFixedPoints.o
+	g++ --std=c++11 EulerPoissonTracker.cpp -c -o EulerPoissonTracker.o
 clean:
 	rm -rf *.o main

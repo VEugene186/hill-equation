@@ -9,6 +9,7 @@
 #include "EulerPoisson.h"
 #include "RungeKutta.h"
 #include "EulerPoissonFixedPoints.h"
+#include "EulerPoissonTracker.h"
 #include <omp.h>
 
 using namespace std;
@@ -27,6 +28,7 @@ void EulerPoinsotStability();
 void JoukowskiiVolterraStability_Flow(); 
 void JoukowskiiVolterraStability_Map(); 
 void JoukowskiiVolterraStability_findFP(); 
+void JoukowskiiVolterraStability_trackFP(); 
 
 int main(int argc, char * argv[]) {
     startMenuLoop();
@@ -82,7 +84,8 @@ void startMenuLoop() {
         case 4:
             //JoukowskiiVolterraStability_Flow();
             //JoukowskiiVolterraStability_Map();
-            JoukowskiiVolterraStability_findFP();
+            //JoukowskiiVolterraStability_findFP();
+            JoukowskiiVolterraStability_trackFP(); 
             break;
         case 5:
             multitreadingOptions();
@@ -460,7 +463,47 @@ void JoukowskiiVolterraStability_findFP() {
     getchar();
 }
 
+void  JoukowskiiVolterraStability_trackFP() {
+    //double M0[3] = { 0.536357900134574, 0.589984383362725, 3.37108864269863 };//1 stable point
+    //double M0[3] = { 0.5363579, 0.589984383362725, 3.37108864269863 };//1 stable point perturbed
+    //double M0[3] = { 0.792282734739558, 2.94208261906373, -1.64816198565656 };//2 unstable point
+    //double M0[3] = { 0.79228273473, 2.94208261906373, -1.64816198565656 };//2 unstable point perturbed
+    double M0[3] = { -3.43273007941469, -0.316911509971415, -0.340486966577532 };//4 stable point
 
+    double dJ2_min = 0.0;
+    double dJ2_max = 1.0;
+    int N = 501;
+    valarray<double*> points;
+    valarray<double> dJ2;
+    
+    EulerPoisson eqs;
+    eqs.setParameter(0, 2.0);
+    eqs.setParameter(1, 3.0);
+    eqs.setParameter(2, 4.0);
+    eqs.setParameter(3, 0.3);
+    eqs.setParameter(4, 0.2);
+    eqs.setParameter(5, 0.4);
+    eqs.setParameter(6, 0.5);
+    eqs.setParameter(7, 0.0);
+
+    EulerPoissonTracker ept;
+    ept.track(&eqs, M0, dJ2_min, dJ2_max, N, points, dJ2);
+
+    for (int i = 0; i < N; i++) {
+        printf("%8lg | ", dJ2[i]);
+        printf("%.15lg\t%.15lg\t%.15lg\t%.15lg\t%.15lg\n", 
+                points[i][0], points[i][1], points[i][2], 
+                points[i][3], points[i][4]);
+    }
+    getchar();
+
+    
+    for (int i = 0; i < N; i++) {
+        delete [] points[i];
+    }
+
+
+}
 
 
 

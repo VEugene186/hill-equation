@@ -16,7 +16,7 @@ void EulerPoissonFixedPoints::find(const EulerPoisson *eqs, const double * M0,
     method_.init(eqs);
 
     double T = 1.0;
-    double step = 0.005;
+    double step = 0.001;
     int N_step = (int)ceil(T / step);
 
     double M1_a[3], phi1_a, z1_a;

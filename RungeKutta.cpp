@@ -1,4 +1,6 @@
 #include "RungeKutta.h"
+#include <cstdlib>
+#include <cmath>
 
 RungeKutta::RungeKutta() : dim_(0), 
         k1_(nullptr), k2_(nullptr), k3_(nullptr), k4_(nullptr), q_(nullptr), qTmp_(nullptr) {
@@ -47,17 +49,17 @@ void RungeKutta::makeStep(const Equation *eq, double t0, const double *q0, doubl
         q_[i] = q0[i] + dt_2 * k1_[i]; 
     }
     
-    eq->RHS(t0, q_, k2_);
+    eq->RHS(t0 + dt_2, q_, k2_);
     for (int i = 0; i < dim_; i++) {
         q_[i] = q0[i] + dt_2 * k2_[i]; 
     }
 
-    eq->RHS(t0, q_, k3_);
+    eq->RHS(t0 + dt_2, q_, k3_);
     for (int i = 0; i < dim_; i++) {
         q_[i] = q0[i] + dt * k3_[i]; 
     }
 
-    eq->RHS(t0, q_, k4_);
+    eq->RHS(t0 + dt, q_, k4_);
     for (int i = 0; i < dim_; i++) {
         q1[i] = q0[i] + dt_6 * (k1_[i] + 2.0 * (k2_[i] + k3_[i]) + k4_[i]); 
     }
@@ -75,5 +77,6 @@ void RungeKutta::map(const Equation *eq, double t0, const double *q0, double *q1
             qTmp_[i] = q1[i];
         }
     }
+    //if (fabs(t0 - T) > 1e-10) exit(1);
 }
 
