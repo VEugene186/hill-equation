@@ -22,8 +22,15 @@ void LiouvilleHill2::RHS(double t, const double *q, double *dq) const {
     double I2 = I20_;
     double I3 = I30_ + pow(dJ2_ * sin(2.0 * M_PI * t), 2);
 
-    double f = 1.0 / I2 - (1.0 - k1_) / I1;
-    double g = (1.0 - k1_) / I1 - 1.0 / I3;
+    //M = (1,0,0)
+    //double f = 1.0 / I2 - 1.0 / I1;
+    //double g = 1.0 / I1 - 1.0 / I3;
+    //M = (0,1,0)
+    //double f = 1.0 / I2 - 1.0 / I1;
+    //double g = 1.0 / I3 - 1.0 / I2;
+    //M = (0,0,1)
+    double f = 1.0 / I1 - 1.0 / I3;
+    double g = 1.0 / I3 - 1.0 / I2;
 
     dq[0] = 2.0 * M_PI / Omega_ * g * q[1];
     dq[1] = 2.0 * M_PI / Omega_ * f * q[0];
