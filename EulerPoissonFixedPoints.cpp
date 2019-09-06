@@ -15,8 +15,8 @@ void EulerPoissonFixedPoints::find(const EulerPoisson *eqs, const double * M0,
 
     method_.init(eqs);
 
-    double T = 2.0 * M_PI / eqs->getParameter(6);
-    double step = 0.0001;
+    double T = 1.0;
+    double step = 0.005;
     int N_step = (int)ceil(T / step);
 
     double M1_a[3], phi1_a, z1_a;
@@ -84,15 +84,15 @@ void EulerPoissonFixedPoints::find(const EulerPoisson *eqs, const double * M0,
         double hPhi = (invA[0][0] * dPhi + invA[0][1] * dZ) / det;
         double hZ   = (invA[1][0] * dPhi + invA[1][1] * dZ) / det;
         
-        //double len = sqrt(hPhi * hPhi + hZ * hZ);
-        //if (len < maxLen) {
+        double len = sqrt(hPhi * hPhi + hZ * hZ);
+        if (len < maxLen) {
             *phi1 -= hPhi;
             *z1 -= hZ;
-        /*}
+        }
         else {
             *phi1 -= hPhi / len * maxLen;
             *z1 -= hZ / len * maxLen;
-        }*/
+        }
         M1[0] = g * cos(*phi1) * sqrt(1.0 - *z1 * *z1);
         M1[1] = g * sin(*phi1) * sqrt(1.0 - *z1 * *z1);
         M1[2] = g * *z1;
