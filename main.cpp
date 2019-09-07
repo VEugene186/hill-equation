@@ -509,10 +509,11 @@ void  JoukowskiiVolterraStability_trackFP() {
 
 void JoukowskiiVolterraStability_trackMap() {
     //double M0[3] = { 0.536357900134574, 0.589984383362725, 3.37108864269863 };//1 stable point
-    //double M0[3] = { 0.5363579, 0.589984383362725, 3.37108864269863 };//1 stable point perturbed
+    //double M0[3] = { 0.687642930709776, 1.29525790313105, -3.13838400948439 }; //2 stable point
     //double M0[3] = { 0.792282734739558, 2.94208261906373, -1.64816198565656 };//2 unstable point
-    //double M0[3] = { 0.79228273473, 2.94208261906373, -1.64816198565656 };//2 unstable point perturbed
-    double M0[3] = { -3.43273007941469, -0.316911509971415, -0.340486966577532 };//4 stable point
+    //double M0[3] = { 3.38627670835862, -0.544794824642693, -0.486136455607592 }; //3 stable point
+    double M0[3] = { 1.03016979405738, -3.16561857231879, -0.957919229372919 }; //3 unstable point
+    //double M0[3] = { -3.43273007941469, -0.316911509971415, -0.340486966577532 };//4 stable point
 
     double Omega_min, Omega_max;
     double dJ2_min, dJ2_max;
@@ -562,7 +563,7 @@ void JoukowskiiVolterraStability_trackMap() {
     printf("Time: %lg\n", omp_get_wtime() - start);
     
 
-    saveToFile("trace.csv", Omega, dJ2, tr);
-    saveToFile("det.csv", Omega, dJ2, det);
+    saveToFile("trace3u.csv", Omega, dJ2, tr);
+    saveToFile("det3u.csv", Omega, dJ2, det);
 
 }
