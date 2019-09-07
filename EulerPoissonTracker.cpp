@@ -11,12 +11,16 @@ EulerPoissonTracker::~EulerPoissonTracker() {
 }
 
 void EulerPoissonTracker::track(EulerPoisson * eqs, const double *M0, 
-        double dJ2_min, double dJ2_max, int N_J, valarray<double*> &points, valarray<double> & dJ2) {
+        double dJ2_min, double dJ2_max, int N_J, valarray<double*> &points, valarray<double> & dJ2, 
+        valarray<double> & tr, valarray<double> & det) {
 
     double M1[3], phi1, z1;
     double g = sqrt(M0[0] * M0[0] + M0[1] * M0[1] + M0[2] * M0[2]);
 
     double step = (dJ2_max - dJ2_min) / (N_J - 1);
+    //double delta = 1e-6;
+    //double A[2][2];
+
     points.resize(N_J);
     dJ2.resize(N_J);
     points[0] = new double[5];
@@ -24,6 +28,8 @@ void EulerPoissonTracker::track(EulerPoisson * eqs, const double *M0,
     dJ2[0] = dJ2_min;
     eqs->setParameter(7, dJ2_min);
     epfp_.find(eqs, M0, points[0], points[0] + 3, points[0] + 4);
+    epfp_.getTrace(eqs, points[0], &det[0], &tr[0]); 
+    
     /*int i = 0;
     printf("%.15lg\t%.15lg\t%.15lg\t%.15lg\t%.15lg\n", 
             points[i][0], points[i][1], points[i][2], 
@@ -50,6 +56,8 @@ void EulerPoissonTracker::track(EulerPoisson * eqs, const double *M0,
         }
 
         epfp_.find(eqs, icM, points[i], points[i] + 3, points[i] + 4);
+        epfp_.getTrace(eqs, points[i], &det[i], &tr[i]); 
+
         /*printf("%8lg | ", dJ2_min + i * step);
         printf("%.15lg\t%.15lg\t%.15lg\t%.15lg\t%.15lg\n", 
                 points[i][0], points[i][1], points[i][2], 

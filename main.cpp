@@ -476,7 +476,7 @@ void  JoukowskiiVolterraStability_trackFP() {
     double dJ2_max = 1.0;
     int N = 501;
     valarray<double*> points;
-    valarray<double> dJ2;
+    valarray<double> dJ2, det(N), tr(N);
     
     EulerPoisson eqs;
     eqs.setParameter(0, 2.0);
@@ -489,7 +489,7 @@ void  JoukowskiiVolterraStability_trackFP() {
     eqs.setParameter(7, 0.0);
 
     EulerPoissonTracker ept;
-    ept.track(&eqs, M0, dJ2_min, dJ2_max, N, points, dJ2);
+    ept.track(&eqs, M0, dJ2_min, dJ2_max, N, points, dJ2, tr, det);
 
     for (int i = 0; i < N; i++) {
         printf("%8lg | ", dJ2[i]);
@@ -525,7 +525,10 @@ void JoukowskiiVolterraStability_trackMap() {
     createMesh(N_dJ2, dJ2_min, dJ2_max, dJ2);
 
     valarray<valarray<double*> > points(N_Omega);
-
+    valarray<valarray<double> > tr;
+    valarray<valarray<double> > det;
+    allocate2d(N_Omega, N_dJ2, tr);
+    allocate2d(N_Omega, N_dJ2, det);
 
     int count = 0;
     double start = omp_get_wtime();
@@ -546,7 +549,7 @@ void JoukowskiiVolterraStability_trackMap() {
         #pragma omp for schedule(dynamic, 1)
         for (int i = 0; i < N_Omega; i++) {
             eqs.setParameter(6, Omega[i]);
-            ept.track(&eqs, M0, dJ2_min, dJ2_max, N_dJ2, points[i], tmp_dJ2);
+            ept.track(&eqs, M0, dJ2_min, dJ2_max, N_dJ2, points[i], tmp_dJ2, tr[i], det[i]);
 
             
             #pragma omp critical
@@ -559,5 +562,7 @@ void JoukowskiiVolterraStability_trackMap() {
     printf("Time: %lg\n", omp_get_wtime() - start);
     
 
+    saveToFile("trace.csv", Omega, dJ2, tr);
+    saveToFile("det.csv", Omega, dJ2, det);
 
 }

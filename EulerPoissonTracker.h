@@ -11,7 +11,8 @@ public:
     ~EulerPoissonTracker();
 
     void track(EulerPoisson * eqs, const double *M0, double dJ2_min, double dJ2_max,
-                int N_J, valarray<double*> &points, valarray<double> & dJ2);
+                int N_J, valarray<double*> &points, valarray<double> & dJ2, 
+                valarray<double> & tr, valarray<double> & det);
 private:
     EulerPoissonFixedPoints epfp_;
 };
