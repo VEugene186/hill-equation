@@ -29,6 +29,7 @@ RungeKutta::~RungeKutta() {
 }
 
 void RungeKutta::init(const Equation *eq) {
+    if (dim_ == eq->getDim()) return;
     dim_ = eq->getDim();
     if (dim_ > 0) {
         k1_ = new double[dim_];

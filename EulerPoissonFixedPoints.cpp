@@ -157,11 +157,11 @@ void EulerPoissonFixedPoints::getTrace(const EulerPoisson *eqs, const double * M
     double dPhi_b = phi2_b - phi1_b;
     double dZ_b = z2_b - z1_b;
 
-    A[0][0] = (dPhi_a - dPhi) / delta;
+    A[0][0] = (dPhi_a - dPhi) / delta + 1.0;
     A[1][0] = (dZ_a - dZ) / delta;
         
     A[0][1] = (dPhi_b - dPhi) / delta;
-    A[1][1] = (dZ_b - dZ) / delta;
+    A[1][1] = (dZ_b - dZ) / delta + 1.0;
 
     *det = A[0][0] * A[1][1] - A[0][1] * A[1][0];
     *tr = fabs(A[0][0] + A[1][1]);
