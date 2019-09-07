@@ -1,4 +1,4 @@
-#include "LiouvilleHill2.h"
+#include "LiouvilleHill.h"
 #include <cmath>
 
 //parameters_[0] = I1(0)
@@ -7,17 +7,17 @@
 //parameters_[3] = dJ2
 //parameters_[4] = Omega
 //parameters_[5] = k1
-LiouvilleHill2::LiouvilleHill2() : Equation(2, 6),
+LiouvilleHill::LiouvilleHill() : Equation(2, 6),
         I10_(parameters_[0]), I20_(parameters_[1]), I30_(parameters_[2]),
         dJ2_(parameters_[3]), Omega_(parameters_[4]), k1_(parameters_[5]) {
 
 }
 
-LiouvilleHill2::~LiouvilleHill2() {
+LiouvilleHill::~LiouvilleHill() {
 
 }
 
-void LiouvilleHill2::RHS(double t, const double *q, double *dq) const {
+void LiouvilleHill::RHS(double t, const double *q, double *dq) const {
     double I1 = I10_ + pow(dJ2_ * sin(2.0 * M_PI * t), 2);
     double I2 = I20_;
     double I3 = I30_ + pow(dJ2_ * sin(2.0 * M_PI * t), 2);

@@ -1,12 +1,12 @@
-#ifndef LIOUVILLEHILL2_H
-#define LIOUVILLEHILL2_H
+#ifndef LIOUVILLEHILL_H
+#define LIOUVILLEHILL_H
 
 #include "Equation.h"
 
-class LiouvilleHill2 : public Equation {
+class LiouvilleHill : public Equation {
 public:
-    LiouvilleHill2();
-    ~LiouvilleHill2();
+    LiouvilleHill();
+    ~LiouvilleHill();
 
     virtual void RHS(double t, const double *q, double *dq) const;
 private:

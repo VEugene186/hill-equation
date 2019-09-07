@@ -5,7 +5,7 @@
 #include <string>
 #include "Mathieu.h"
 #include "Mathieu2.h"
-#include "LiouvilleHill2.h"
+#include "LiouvilleHill.h"
 #include "EulerPoisson.h"
 #include "RungeKutta.h"
 #include "EulerPoissonFixedPoints.h"
@@ -307,7 +307,7 @@ void EulerPoinsotStability() {
     #pragma omp parallel
     {
         RungeKutta method;
-        LiouvilleHill2 eqs;
+        LiouvilleHill eqs;
         method.init(&eqs);
         eqs.setParameter(0, 2.0);
         eqs.setParameter(1, 3.0);
